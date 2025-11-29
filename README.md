@@ -1,73 +1,71 @@
-## `README.md`
-
 # 3D Racing Game Prototype - Challenge 1
 
-## 🛠️ 1. Cài Đặt và Khởi Chạy
+## 🛠️ 1. Setup and Running
 
-Dự án này sử dụng các file JavaScript module (`type="module"`), do đó, cần phải được chạy thông qua một **Web Server cục bộ** (Local Web Server).
+This project uses JavaScript module files (`type="module"`), and therefore **must be run through a Local Web Server**.
 
-### Yêu cầu
+### Requirements
 
-  * Trình duyệt web hiện đại (Chrome, Firefox).
-  * Đã cài đặt Node.js hoặc Python.
+  * A modern web browser (Chrome, Firefox).
+  * Node.js or Python installed.
 
-### Cách Khởi Chạy
+### How to Run
 
-1.  **Mở Terminal** (hoặc CMD/PowerShell) trong thư mục gốc của dự án (`Racing Game/`).
-2.  Chạy một trong các lệnh sau để khởi động Server:
-      * **Sử dụng Python:**
+1.  **Open the Terminal** (or CMD/PowerShell) in the project root directory (`Racing Game/`).
+2.  Run one of the following commands to start the server:
+      * **Using Python:**
         ```bash
         python -m http.server
         ```
-      * **Sử dụng Node.js (cần cài đặt `http-server` trước):**
+      * **Using Node.js (requires `http-server` to be installed first):**
         ```bash
         npx http-server
         ```
-3.  Mở trình duyệt và truy cập vào địa chỉ: **`http://localhost:8081/`** (hoặc cổng được hiển thị trên Terminal).
+3.  Open your browser and navigate to the address: **`http://localhost:8081/`** (or the port displayed in the Terminal).
 
 -----
 
-## 2. Hướng Dẫn Điều Khiển
+## 2\. Control Instructions
 
-Dự án sử dụng các phím tiêu chuẩn (WASD hoặc Phím Mũi tên)
+The project uses standard keys (WASD or Arrow Keys).
 
-| Hành động | Phím WASD | Phím Mũi tên |
+| Action | WASD Key | Arrow Key |
 | :--- | :--- | :--- |
-| **Tăng tốc (Accelerate)** | `W` | `Arrow Up` |
-| **Phanh/Lùi (Brake/Reverse)** | `S` | `Arrow Down` |
-| **Lái trái (Turn Left)** | `A` | `Arrow Left` |
-| **Lái phải (Turn Right)** | `D` | `Arrow Right` |
+| **Accelerate** | `W` | `Arrow Up` |
+| **Brake/Reverse** | `S` | `Arrow Down` |
+| **Turn Left** | `A` | `Arrow Left` |
+| **Turn Right** | `D` | `Arrow Right` |
 
 -----
 
-## 3. Triển Khai Kỹ Thuật (Đáp ứng các Yêu cầu)
+## 3\. Technical Implementation (Meeting Requirements)
 
-Dự án được triển khai bằng kiến trúc ES Module (`.js` files trong thư mục `src/`) để tách biệt các lớp chức năng:
+The project is implemented using ES Module architecture (`.js` files in the `src/` folder) to separate functional classes:
 
 ### R1 – 3D Environment and Physics (40%)
 
-  * **Scene:** Sử dụng `THREE.Scene` với ánh sáng `AmbientLight` và `DirectionalLight`.
-  * **Physics:** Khởi tạo `CANNON.World` với trọng lực **$9.82 \text{ m/s}^2$** và sử dụng `CANNON.SAPBroadphase` để tối ưu hóa va chạm.
-  * **Track:** Track đua hình chữ nhật kín (100x100 đơn vị). Tường biên được tạo bằng `CANNON.Box` có `mass: 0`.
-  * **Vật liệu:** Thiết lập `CANNON.ContactMaterial` với **hệ số ma sát $0.8$** giữa xe và mặt đất để đảm bảo độ bám.
+  * **Scene:** Uses `THREE.Scene` with `AmbientLight` and `DirectionalLight`.
+  * **Physics:** Initializes `CANNON.World` with gravity **$9.82 \text{ m/s}^2$** and uses `CANNON.SAPBroadphase` for collision optimization.
+  * **Track:** A closed rectangular race track (100x100 units). The boundary walls are created using `CANNON.Box` with `mass: 0`.
+  * **Materials:** Set up `CANNON.ContactMaterial` with a **friction coefficient of $0.8$** between the car and the ground to ensure grip.
 
 ### R2 – Car Control and Interaction (30%)
 
-  * **Car Model:** Xe được mô hình hóa bằng `THREE.BoxGeometry` và `CANNON.Box` (Mass: 100kg).
-  * **Điều khiển:** Áp dụng **Lực cục bộ (`applyLocalForce`)** để tăng/giảm tốc và **Mô-men xoắn cục bộ (`applyLocalTorque`)** để lái, đảm bảo xe di chuyển theo hướng quay hiện tại.
-  * **Đồng bộ:** Vị trí và góc quay (`position` và `quaternion`) của Mesh 3D được đồng bộ liên tục từ Body vật lý trong mỗi frame.
-  * **Camera:** Camera đi theo xe sử dụng kỹ thuật **LERP (Linear Interpolation)** để tạo hiệu ứng theo dõi mượt mà.
+  * **Car Model:** The car is modeled using `THREE.BoxGeometry` and `CANNON.Box` (Mass: 100kg).
+  * **Control:** **Local Force (`applyLocalForce`)** is applied for acceleration/deceleration and **Local Torque (`applyLocalTorque`)** for steering, ensuring the car moves in its current rotation direction.
+  * **Synchronization:** The position and rotation (`position` and `quaternion`) of the 3D Mesh are continuously synchronized from the physics Body in every frame.
+  * **Camera:** The camera follows the car using the **LERP (Linear Interpolation)** technique to create a smooth tracking effect.
 
 ### R3 – Game Logic and Visual Feedback (30%)
 
-  * **Lap Counting:** Triển khai **Logic 2 Checkpoint** trong `Game.js`. Chỉ đếm lap khi xe đi qua Vạch đích (Z=0) **sau khi** đã đi qua Checkpoint giữa đường (Z \< -30).
-  * **HUD:** Hiển thị **Tốc độ** (Km/h), **Lap Count** (Vòng hiện tại/Tổng số vòng), và **Timer** theo thời gian thực.
-  * **Collision Detection:** Bắt sự kiện va chạm của xe với các đối tượng tĩnh (`mass: 0`) và hiển thị thông báo **"CRASH\!"** nếu lực va chạm vượt quá ngưỡng an toàn.
+  * **Lap Counting:** Implements **2 Checkpoint Logic** in `Game.js`. A lap is only counted when the car crosses the Finish Line (Z=0) **after** having passed the Mid-track Checkpoint (Z \< -30).
+  * **HUD:** Displays **Speed** (Km/h), **Lap Count** (Current Lap/Total Laps), and **Timer** in real-time.
+  * **Collision Detection:** Catches collision events between the car and static objects (`mass: 0`) and displays a **"CRASH\!"** notification if the collision force exceeds a safe threshold.
 
 -----
 
-## 4. Thư Viện và Assets
+## 4\. Libraries and Assets
 
   * **Rendering:** THREE.js
-  * **Physics:** CANNON-ES 
+  * **Physics:** CANNON-ES
   * **Assets:** Textures: `assets/textures/track_texture.jpg`, `grass_texture.jpg`
